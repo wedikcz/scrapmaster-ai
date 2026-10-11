@@ -1,0 +1,90 @@
+version: '3.9'
+
+services:
+  scrapmaster-backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prod
+    container_name: scrapmaster-backend-prod
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - SECRET_KEY=${SECRET_KEY}
+      - ENVIRONMENT=production
+      - API_PREFIX=/api/v1
+      - LOG_LEVEL=WARNING
+      - DEBUG=False
+      - ENABLE_OPENCV=True
+      - ENABLE_OLLAMA=${ENABLE_OLLAMA:-False}
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data
+      - /app/logs
+    networks:
+      - scrapmaster-network
+    healthcheck:
+      test: [
+        "CMD",
+        "curl",
+        "-f",
+        "http://localhost:8000/api/v1/health",
+      ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    restart: always
+    user: "1000:1000"
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE
+
+  scrapmaster-frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.prod
+    container_name: scrapmaster-frontend-prod
+    environment:
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+      - NODE_ENV=production
+    ports:
+      - "3000:3000"
+    networks:
+      - scrapmaster-network
+    healthcheck:
+      test: [
+        "CMD",
+        "curl",
+        "-f",
+        "http://localhost:3000/",
+      ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    restart: always
+    user: "1000:1000"
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE
+
+networks:
+  scrapmaster-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+volumes:
+  data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./data

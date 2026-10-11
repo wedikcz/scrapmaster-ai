@@ -1,27 +1,82 @@
 version: '3.9'
 
 services:
-  backend:
+  scrapmaster-backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
+    container_name: scrapmaster-backend
+    environment:
+      - DATABASE_URL=${DATABASE_URL:-sqlite:///./data/scrapmaster.db}
+      - SECRET_KEY=${SECRET_KEY:-dev-secret-change-me}
+      - ENVIRONMENT=${ENVIRONMENT:-development}
+      - API_PREFIX=${API_PREFIX:-/api/v1}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - ENABLE_OPENCV=${ENABLE_OPENCV:-True}
+      - ENABLE_OLLAMA=${ENABLE_OLLAMA:-False}
+      - OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-http://localhost:11434}
     ports:
       - "8000:8000"
-    environment:
-      - DATABASE_URL=sqlite:///./scrapmaster.db
     volumes:
       - ./backend:/app
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+      - ./data:/app/data
+    networks:
+      - scrapmaster-network
+    healthcheck:
+      test: [
+        "CMD",
+        "curl",
+        "-f",
+        "http://localhost:8000/api/v1/health",
+      ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+    user: "1000:1000"
+    security_opt:
+      - no-new-privileges:true
 
-  frontend:
+  scrapmaster-frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+    container_name: scrapmaster-frontend
+    environment:
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:8000}
+      - NODE_ENV=${ENVIRONMENT:-development}
     ports:
       - "3000:3000"
-    environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:8000
     volumes:
       - ./frontend:/app
+      - /app/.next
       - /app/node_modules
-    command: npm run dev
+    networks:
+      - scrapmaster-network
+    healthcheck:
+      test: [
+        "CMD",
+        "curl",
+        "-f",
+        "http://localhost:3000/",
+      ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    restart: unless-stopped
+    user: "1000:1000"
+    security_opt:
+      - no-new-privileges:true
+
+networks:
+  scrapmaster-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+volumes:
+  data:
+    driver: local
