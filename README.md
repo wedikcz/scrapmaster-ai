@@ -1,34 +1,63 @@
-# ScrapMaster AI
+# ScrapMaster Unified
 
-ScrapMaster AI is a privacy-first, local-first platform for salvaged hardware recycling, reverse video engineering, mechanical inference, and build guidance generation.
+ScrapMaster Unified combines the best ideas from the TypeScript experiments and the AI-first Python platform into one coherent product:
 
-It helps users:
-- Analyze video clips of salvaged mechanical devices
-- Extract motion characteristics and infer device operation
-- Generate repair and repurposing workflows
-- Track inventory, projects, schematics, and operational logs
-- Work offline with local AI-first inference and optional cloud sync hooks
+- Next.js frontend for the control room and user workflows
+- FastAPI backend for API, business logic, and data processing
+- Local-first AI analysis for salvaged hardware and mechanism inference
+- Scrap inventory, project management, safety review, and repair guidance
+- Optional cloud summarization layer for richer explanations without forcing external dependency
 
-## Core features
+## Product vision
 
-- Inverse video engineering for mechanical systems
-- Motion analysis and mechanism inference
-- Repair and repurposing guidance generation
-- Inventory and scrap tracking
-- Project lifecycle management
-- Safety-oriented schematic generation for salvaged hardware
-- Local-first dashboard with monitoring and export tools
+ScrapMaster is a privacy-first platform for reverse engineering, salvage reuse, and build guidance generation for discarded hardware. It helps users:
 
-## Project architecture
+- analyze video clips of salvaged mechanisms
+- infer motion and assembly behavior from raw footage
+- track scrap inventory and project history
+- identify likely faults and safe reuse options
+- generate repair, repurposing, and safety workflows
 
-- Frontend: Next.js app router + Tailwind CSS
-- Backend: FastAPI + Pydantic v2 + SQLite
-- AI: local-first motion inference, OpenCV-based fallback, and mock analyzer for warm-up environments
-- Data: SQLite with modular schema for scrap items, projects, schematics, audit logs, and analysis runs
+## Unified architecture
 
-## Quick start
+```text
+scrapmaster/
+├── frontend/                # Next.js dashboard and control room
+├── backend/                 # FastAPI API + business logic
+├── ai/                      # inference and motion-analysis modules
+├── docs/                    # project and API documentation
+├── scripts/                 # maintenance and setup scripts
+├── docker-compose.yml       # local orchestration
+├── .env.example             # environment template
+├── README.md                # project entry point
+├── LICENSE                  # project license
+└── .gitignore
+```
 
-### Backend
+## Stack
+
+- Frontend: Next.js App Router + TypeScript + Tailwind CSS
+- Backend: FastAPI + Pydantic + SQLAlchemy + SQLite
+- AI: OpenCV + NumPy + local-first heuristics + optional LLM summarization
+- Ops: Docker Compose for local development
+
+## Merge logic
+
+The merged product keeps the strongest parts of the project family:
+
+- `scrapmaster-ai` is the source of truth for AI, safety, and workflow direction
+- `scrapmaster` and `scrapmasterv2` contribute the dashboard patterns, orchestration ideas, and iterative UX direction
+- the final app is not a duplicate of both TypeScript repos; it is a single modern product built around one backend and one frontend
+
+## Getting started
+
+### 1) Copy environment
+
+```bash
+cp .env.example .env
+```
+
+### 2) Run backend
 
 ```bash
 cd backend
@@ -38,7 +67,7 @@ pip install -r requirements.txt
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-### Frontend
+### 3) Run frontend
 
 ```bash
 cd frontend
@@ -46,7 +75,7 @@ npm install
 npm run dev
 ```
 
-### Docker
+### 4) Run with Docker
 
 ```bash
 docker compose up --build
@@ -54,46 +83,38 @@ docker compose up --build
 
 ## API overview
 
-- `POST /api/v1/videos/analyze`
-- `GET /api/v1/health`
-- `GET /api/v1/scrap/items`
-- `POST /api/v1/scrap/items`
+- `GET /` — service status
+- `GET /api/v1/health` — health check
+- `POST /api/v1/videos/analyze` — video analysis request
+- `GET /api/v1/scrap/items` — list scrap items
+- `POST /api/v1/scrap/items` — create a scrap item
+- `GET /api/v1/projects` — list projects
+- `POST /api/v1/projects` — create a project
 
-## Example output
+## Core features
 
-```json
-{
-  "device_name": "salvaged gearbox",
-  "mechanism_summary": "The mechanism shows alternating linear motion converted to rotary output through a cam-and-follower arrangement.",
-  "motion_profile": {
-    "dominant_motion": "reciprocating",
-    "cycle_estimate": 0.85,
-    "confidence": 0.82
-  },
-  "likely_faults": [
-    "worn gear teeth",
-    "misaligned cam follower",
-    "dragging bearing"
-  ],
-  "repair_steps": [
-    "Inspect the follower track for wear",
-    "Check for lubrication loss",
-    "Verify that the drive shaft rotates without binding"
-  ],
-  "repurpose_options": [
-    "gearbox-driven actuator",
-    "manual feed mechanism",
-    "sensory motion pump"
-  ]
-}
-```
+- Inverse video engineering for salvaged hardware
+- Motion analysis and mechanism inference
+- Scrap and inventory tracking
+- Project lifecycle and repair planning
+- Safety-oriented guidance generation
+- Local-first AI flow with optional cloud enhancement
+- Exportable operational logs and reports
 
-## Security and privacy
+## Safety and privacy
 
 - Local inference first
-- No mandatory commercial cloud dependency
-- Exportable logs for auditing
-- Safety warnings included by default
+- No lock-in to cloud-only processing
+- Safety warnings by default
+- Transparent records and exportable logs
+
+## Suggested next milestones
+
+1. unify the data model for scrap items, projects, videos, and analyses
+2. finalize the AI inference flow for motion and mechanism detection
+3. connect the Next.js dashboard to the API
+4. add project pages, inventory management, and export tools
+5. prepare deployment and single-command setup with Docker
 
 ## License
 

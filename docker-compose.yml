@@ -9,6 +9,7 @@ services:
       - "8000:8000"
     environment:
       - DATABASE_URL=sqlite:///./scrapmaster.db
+      - APP_NAME=ScrapMaster Unified
     volumes:
       - ./backend:/app
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
@@ -25,3 +26,13 @@ services:
       - ./frontend:/app
       - /app/node_modules
     command: npm run dev
+
+  # Optional local storage service for future expansion
+  # db:
+  #   image: postgres:16
+  #   environment:
+  #     POSTGRES_DB: scrapmaster
+  #     POSTGRES_USER: scrapmaster
+  #     POSTGRES_PASSWORD: scrapmaster
+  #   ports:
+  #     - "5432:5432"
