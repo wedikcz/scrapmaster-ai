@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import get_settings
 from app.database import init_db
-from app.routers.videos import router as api_router
+from app.routers import health_router, projects_router, scrap_router, videos_router
 
 settings = get_settings()
 
@@ -17,7 +17,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(api_router)
+app.include_router(health_router)
+app.include_router(videos_router)
+app.include_router(scrap_router)
+app.include_router(projects_router)
 
 
 @app.on_event("startup")

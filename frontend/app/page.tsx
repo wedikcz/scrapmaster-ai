@@ -15,16 +15,19 @@ const logs = [
 
 export default function HomePage() {
   return (
-    <main className="min-h-screen p-6 md:p-10">
+    <main className="min-h-screen bg-slate-950 p-6 text-slate-100 md:p-10">
       <div className="mx-auto max-w-7xl space-y-8">
         <header className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
-            <p className="text-sm uppercase tracking-[0.2em] text-teal-300">ScrapMaster AI</p>
-            <h1 className="mt-2 text-3xl font-bold md:text-5xl">Inverse video engineering for salvage workflows</h1>
+            <p className="text-sm uppercase tracking-[0.2em] text-teal-300">ScrapMaster Unified</p>
+            <h1 className="mt-2 text-3xl font-bold md:text-5xl">Reverse engineering for salvage value</h1>
           </div>
-          <button className="rounded-xl bg-teal-500 px-5 py-3 font-semibold text-slate-950 transition hover:bg-teal-400">
+          <a
+            href="/analysis"
+            className="rounded-xl bg-teal-500 px-5 py-3 font-semibold text-slate-950 transition hover:bg-teal-400"
+          >
             New analysis run
-          </button>
+          </a>
         </header>
 
         <section className="grid gap-4 md:grid-cols-4">
