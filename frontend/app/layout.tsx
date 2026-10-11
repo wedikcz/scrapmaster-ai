@@ -1,9 +1,8 @@
-import './globals.css';
-import type { Metadata } from 'next';
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: 'ScrapMaster AI',
-  description: 'Local-first scrap hardware recycling and inverse video engineering platform',
+  title: "ScrapMaster AI",
+  description: "Inverse video engineering dashboard for scrap hardware and repair workflows",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
