@@ -1,6 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000';
 
 export default function AnalysisPage() {
   const [deviceName, setDeviceName] = useState('salvaged gearbox');
@@ -11,16 +13,27 @@ export default function AnalysisPage() {
   async function handleSubmit() {
     setLoading(true);
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000'}/api/v1/videos/analyze`, {
+      const res = await fetch(`${API_URL}/api/v1/videos/analyze`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ device_name: deviceName, notes }),
       });
 
+      if (!res.ok) {
+        throw new Error('Analysis failed');
+      }
+
       const data = await res.json();
       setResult(data);
-    } catch (error) {
-      setResult({ mechanism_summary: 'Backend unavailable.', motion_profile: { dominant_motion: 'unknown' } });
+    } catch {
+      setResult({
+        device_name: deviceName,
+        mechanism_summary: 'The backend is not responding. This is a demo fallback state.',
+        motion_profile: { dominant_motion: 'unknown', cycle_estimate: 0, confidence: 0 },
+        likely_faults: ['connection unavailable', 'offline analysis'],
+        repair_steps: ['check backend service', 'verify API startup'],
+        repurpose_options: ['manual inspection workflow'],
+      });
     } finally {
       setLoading(false);
     }
@@ -28,7 +41,7 @@ export default function AnalysisPage() {
 
   return (
     <main className="min-h-screen bg-slate-950 p-6 text-slate-100 md:p-10">
-      <div className="mx-auto max-w-5xl space-y-6">
+      <div className="mx-auto max-w-6xl space-y-6">
         <header>
           <p className="text-sm uppercase tracking-[0.2em] text-teal-300">Analysis</p>
           <h1 className="mt-2 text-3xl font-bold">Reverse engineering run</h1>
@@ -50,7 +63,7 @@ export default function AnalysisPage() {
           <div className="card p-6">
             <h2 className="mb-4 text-xl font-semibold">Analysis result</h2>
             {result ? (
-              <div className="space-y-4 text-sm text-slate-300">
+              <div className="space-y-5 text-sm text-slate-300">
                 <div>
                   <div className="text-slate-400">Device</div>
                   <div className="mt-1 text-xl font-semibold text-white">{result.device_name}</div>
@@ -60,13 +73,13 @@ export default function AnalysisPage() {
                   <p className="mt-1 text-slate-200">{result.mechanism_summary}</p>
                 </div>
                 <div className="grid gap-3 md:grid-cols-2">
-                  <div className="rounded-xl bg-slate-950/60 p-4">
+                  <div className="rounded-xl bg-slate-950/70 p-4">
                     <div className="text-slate-400">Motion</div>
-                    <div className="mt-2 font-semibold text-teal-300">{result.motion_profile?.dominant_motion}</div>
+                    <div className="mt-2 font-semibold text-teal-300">{result.motion_profile?.dominant_motion ?? 'unknown'}</div>
                   </div>
-                  <div className="rounded-xl bg-slate-950/60 p-4">
+                  <div className="rounded-xl bg-slate-950/70 p-4">
                     <div className="text-slate-400">Confidence</div>
-                    <div className="mt-2 font-semibold text-teal-300">{result.confidence ?? '—'}</div>
+                    <div className="mt-2 font-semibold text-teal-300">{result.confidence ?? result.motion_profile?.confidence ?? '—'}</div>
                   </div>
                 </div>
                 <div>
